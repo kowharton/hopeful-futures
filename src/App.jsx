@@ -7,45 +7,17 @@ function App() {
   const [loading, setLoading] = useState(false);
 
   const generateStory = async () => {
-  setLoading(true);
-  setStory('');
+    setLoading(true);
+    setStory('');
 
-  const response = await fetch("/api/generate", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ fear }),
-  });
-
-  const data = await response.json();
-  setStory(data.story);
-  setLoading(false);
-};
-
-    const prompt = `
-    You are a speculative fiction writer helping people feel hopeful about the future.
-
-    Someone has shared this fear about the climate crisis:
-    "${fear}"
-
-    Write a 200-word short story that transforms this fear into a beautiful, imaginative, and hopeful vision of the future. Be poetic, emotional, and end with a sense of possibility or peace. 
-    `;
-
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    const response = await fetch("/api/generate", {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "gpt-3.5-turbo",
-        messages: [{ role: "user", content: prompt }],
-        temperature: 0.9,
-      }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ fear }),
     });
 
     const data = await response.json();
-    const result = data.choices?.[0]?.message?.content;
-    setStory(result);
+    setStory(data.story);
     setLoading(false);
   };
 
