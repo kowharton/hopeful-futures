@@ -1,5 +1,17 @@
 export default async function handler(req, res) {
-  const { fear } = await req.json();
+  const { fear } = await new Promise((resolve, reject) => {
+    let body = '';
+    req.on('data', chunk => {
+      body += chunk;
+    });
+    req.on('end', () => {
+      try {
+        resolve(JSON.parse(body));
+      } catch (e) {
+        reject(e);
+      }
+    });
+  });
 
   const prompt = `
 You are a speculative fiction writer helping people feel hopeful about the future.
@@ -24,12 +36,5 @@ Write a 100-word short story that transforms this fear into a beautiful, imagina
   });
 
   const data = await response.json();
-
-  return new Response(
-    JSON.stringify({ story: data.choices?.[0]?.message?.content }),
-    {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    }
-  );
+  res.status(200).json({ story: data.choices?.[0]?.message?.content });
 }
