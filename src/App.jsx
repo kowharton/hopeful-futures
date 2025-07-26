@@ -17,7 +17,8 @@ function App() {
     });
 
     const data = await response.json();
-    setStory(data.story);
+    console.log("API response:", data);
+    setStory(data.story || "No story was returned.");
     setLoading(false);
   };
 
