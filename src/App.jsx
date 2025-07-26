@@ -7,8 +7,19 @@ function App() {
   const [loading, setLoading] = useState(false);
 
   const generateStory = async () => {
-    setLoading(true);
-    setStory('');
+  setLoading(true);
+  setStory('');
+
+  const response = await fetch("/api/generate", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ fear }),
+  });
+
+  const data = await response.json();
+  setStory(data.story);
+  setLoading(false);
+};
 
     const prompt = `
     You are a speculative fiction writer helping people feel hopeful about the future.
