@@ -1,5 +1,5 @@
 export default async function handler(req, res) {
-  const { fear } = await req.json();
+  const { fear } = req.body;
 
   const prompt = `
 You are a speculative fiction writer helping people feel hopeful about the future.
@@ -17,7 +17,7 @@ Write a 200-word short story that transforms this fear into a beautiful, imagina
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: "gpt-3.5-turbo", // or "gpt-4o" if you prefer
+      model: "gpt-3.5-turbo",
       messages: [{ role: "user", content: prompt }],
       temperature: 0.9,
     }),
