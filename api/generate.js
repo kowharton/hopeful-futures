@@ -14,40 +14,31 @@ export default async function handler(req, res) {
   });
 
   const prompt = `
-You are a speculative fiction writer helping people feel hopeful about the future.
+You are a hopeful speculative fiction writer helping people imagine beautiful futures.
 
 Someone has shared this fear about the climate crisis:
 "${fear}"
 
-Write a 100-word short story that transforms this fear into a beautiful, imaginative, and hopeful vision of the future. Be poetic, emotional, and end with a sense of possibility or peace.
+Write a 100-word poetic story that transforms this fear into a hopeful, beautiful vision of the future.
 `;
 
-  const openaiRes = await fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model: "gpt-3.5-turbo",
-      messages: [
-        {
-          role: "system",
-          content:
-            "You are a hopeful speculative fiction writer helping people imagine beautiful futures.",
-        },
-        {
-          role: "user",
-          content: prompt,
-        },
-      ],
-      temperature: 0.9,
-    }),
-  });
+  const hfResponse = await fetch(
+    "https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1",
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        inputs: prompt,
+      }),
+    }
+  );
 
-  const openaiData = await openaiRes.json();
-  console.log("OpenAI response:", JSON.stringify(openaiData, null, 2));
+  const data = await hfResponse.json();
+  console.log("Hugging Face response:", data);
 
-  const story = openaiData?.choices?.[0]?.message?.content || "No story returned from OpenAI.";
+  const story = data?.[0]?.generated_text || "No story returned from model.";
   res.status(200).json({ story });
 }
