@@ -1,44 +1,29 @@
 export default async function handler(req, res) {
-  const { fear } = await new Promise((resolve, reject) => {
-    let body = '';
-    req.on('data', chunk => {
-      body += chunk;
-    });
-    req.on('end', () => {
-      try {
-        resolve(JSON.parse(body));
-      } catch (e) {
-        reject(e);
-      }
-    });
-  });
+  const { fear } = await req.json();
 
   const prompt = `
-You are a hopeful speculative fiction writer helping people imagine beautiful futures.
+You are a speculative fiction writer helping people feel hopeful about the future.
 
 Someone has shared this fear about the climate crisis:
 "${fear}"
 
-Write a 100-word poetic story that transforms this fear into a hopeful, beautiful vision of the future.
+Write a 200-word short story that transforms this fear into a beautiful, imaginative, and hopeful vision of the future. Be poetic, emotional, and end with a sense of possibility or peace.
 `;
 
-  const hfResponse = await fetch(
-    "https://api-inference.huggingface.co/models/gpt2-medium",
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        inputs: prompt,
-      }),
-    }
-  );
+  const openaiResponse = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: "gpt-3.5-turbo", // or "gpt-4o" if you prefer
+      messages: [{ role: "user", content: prompt }],
+      temperature: 0.9,
+    }),
+  });
 
-  const data = await hfResponse.json();
-  console.log("Hugging Face response:", data);
-
-  const story = data?.[0]?.generated_text || "No story returned from model.";
-  res.status(200).json({ story });
+  const data = await openaiResponse.json();
+  const result = data.choices?.[0]?.message?.content;
+  res.status(200).json({ story: result });
 }
