@@ -36,5 +36,9 @@ Write a 100-word short story that transforms this fear into a beautiful, imagina
   });
 
   const data = await response.json();
-  res.status(200).json({ story: data.choices?.[0]?.message?.content });
+  console.log("OpenAI response:", JSON.stringify(data, null, 2));
+
+  const story = data?.choices?.[0]?.message?.content || "No story returned from OpenAI.";
+  res.status(200).json({ story });
+
 }
