@@ -23,7 +23,7 @@ Write a 100-word poetic story that transforms this fear into a hopeful, beautifu
 `;
 
   const hfResponse = await fetch(
-    "https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-beta",
+    "https://api-inference.huggingface.co/models/bigscience/bloomz",
     {
       method: "POST",
       headers: {
